@@ -1,0 +1,73 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r setup}
+
+work.dir = "work/" ## EDIT THIS SO THAT IT POINTS TO YOUR WORKING DIRECTORY ON YOUR LOCAL MACHINE"
+knitr::opts_knit$set(root.dir = normalizePath(work.dir))
+
+```
+
+Load packages and define folders
+```{r}
+
+getwd()
+##install.packages("tidyverse")
+library(tidyverse)
+bin.dir = "bin/"
+data.dir = "data/hapmap/"
+out.dir ="out/"
+gist.dir = "repo-IntroStatGen/gists/"
+
+```
+
+
+
+```{r}
+
+## TODO
+
+## Bigquery db data
+
+##install.packages("bigrquery")
+##devtools::install_github("rstats-db/bigrquery")
+
+library(bigrquery)
+gene2pheno_proj <- "still-entity-123716" # put your project ID here
+predictdb_proj <- "predictdb-187320"
+gtex_proj <- "gtex-awg-im"
+
+```
+
+```{r}
+
+list_datasets(predictdb_proj, page_size = 50, max_pages = 1e5)
+
+```
+
+
+```{r }
+
+## RDS db data
+install.packages("R")
+drv <- dbDriver("PostgreSQL")
+db.selected.v8 <- dbConnect(drv, host="gene2pheno.ccsriudvs1y0.us-east-1.rds.amazonaws.com",
+                         port="5432",
+                         dbname= "gtexv8qdir_2018_02_26",
+                         user="metaxcan_ro",
+                         password="M3t4Xc4nR0")
+
+
+```
+
+
+ClinVar data
+```{r}
+clinvar = read_tsv("https://00e9e64bac5a91b17e445eee0f06b529227d0d20fb4fc6cf0f-apidata.googleusercontent.com/download/storage/v1/b/genomics-public-data/o/clinvar%2Fvariant_summary.txt?qk=AD5uMEud3Z_a_Y9OhdvzXgtKBAH5hrXxGgSF7u_54i352BW2YGtUIlOeUVSwVtYp5ECmwIAewzQsFY8n7qEKrjw9z0DrOvgcUEQBC_bzL2SswTkYY5g2li8yHmdm_RphSiAvYrZYEp5ZM_kcU7TftTi947JKWEb4gAa69dDruInmwpn8nNE0CLcMpFeO5V9ZCejQIqD6hEQF7sPjHUskinLPm10lFF_DWrT30qGdWXplHZsJLYDXb3ZhRqEMvxfHQQp4sgGVU5978QZ30w6yN7nK3AvJnns400Hgt8MkY4vfJfunUlFrTHDapAUoBRjBVLAiZL_OKmuq5bp1wq0SOVLzN4qtxqzCaPcBkdm9W17HZWeAFKaL50gLqzSKV9mWC2M6G5h3rQLoAmMg8pKTL5qqqGJXZbeUe0Q1X-XQXH8QHcYnshY1rnHCjPGHrOhcunKzbOYi18aYPGHAZVVr7nc_4zMFJDwdlhz2FG3bIeYGEodWufSMIzDQg1vfBNHC0gJrDg_xa5SLyAvZoSypIKTRdpxv0B72TXUoyPaSPR8MNujezejGF_17Hn3dtbNBFovElqyJn4GOHJJ_tlmYErllLGriSybQ3QBRtTg4bTTZV1ZeBjBVBWjN0llUpF43wFwH6Mh94ngxAacfuTfnIn6ADEpsBzVmzs-34b60XuchhOzXTb39Gx4M-5LRjxQ4DcNNwMqJ5bNNkqelo5gK7Pimai8UfQadk3_8dNDLZ07L-9lwH0oKYkP64jKPcOYL3faRvYuCmP56")
+dim(clinvar)
+names(clinvar)
+View(clinvar)
+clinvar %>% count(ClinicalSignificance) %>% arrange(desc(n)) %>% head
+```
+
